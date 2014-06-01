@@ -30,6 +30,7 @@
 		<module>ejb</module>
 		<module>web</module>
 		<module>ear</module>
+		<module>web_gwt</module>
 	</modules>
 
 	<properties>
@@ -87,6 +88,14 @@
 			<dependency>
 				<groupId>net.ere.tmp</groupId>
 				<artifactId>maven_gwt_ear-web</artifactId>
+				<version>${project.version}</version>
+				<type>war</type>
+				<scope>compile</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>net.ere.tmp</groupId>
+				<artifactId>web_gwt</artifactId>
 				<version>${project.version}</version>
 				<type>war</type>
 				<scope>compile</scope>
