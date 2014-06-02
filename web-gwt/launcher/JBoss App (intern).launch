@@ -9,6 +9,9 @@
 <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
 <listEntry value="4"/>
 </listAttribute>
+<listAttribute key="org.eclipse.debug.ui.favoriteGroups">
+<listEntry value="org.eclipse.debug.ui.launchGroup.run"/>
+</listAttribute>
 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="com.google.gdt.eclipse.maven.mavenClasspathProvider"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.DevMode"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-war &quot;${workspace_loc}\maven_gwt_ear\web-gwt\src\main\webapp&quot; -remoteUI &quot;${gwt_remote_ui_server_port}:${unique_id}&quot; -startupUrl App.html -logLevel INFO -codeServerPort 9997 -port 8888 net.ere.tmp.maven_gwt_ear.gwt.App"/>

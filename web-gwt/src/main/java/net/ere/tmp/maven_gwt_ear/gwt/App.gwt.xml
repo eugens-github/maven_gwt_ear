@@ -5,7 +5,7 @@
 <module rename-to='App'>
 
 	<inherits name='com.google.gwt.user.User' />
-	<inherits name='com.google.gwt.user.User' />
+	<inherits name="com.google.gwt.http.HTTP" />
 	<inherits name="com.google.gwt.logging.Logging" />
 	<set-property name="gwt.logging.popupHandler" value="DISABLED" />
 

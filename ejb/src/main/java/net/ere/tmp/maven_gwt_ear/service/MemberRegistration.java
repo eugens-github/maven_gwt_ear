@@ -16,30 +16,30 @@
  */
 package net.ere.tmp.maven_gwt_ear.service;
 
-import net.ere.tmp.maven_gwt_ear.model.Member;
+import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import java.util.logging.Logger;
 
-// The @Stateless annotation eliminates the need for manual transaction demarcation
+import net.ere.tmp.maven_gwt_ear.model.Member;
+
 @Stateless
 public class MemberRegistration {
 
-    @Inject
-    private Logger log;
+	@Inject
+	private Logger log;
 
-    @Inject
-    private EntityManager em;
+	@Inject
+	private EntityManager em;
 
-    @Inject
-    private Event<Member> memberEventSrc;
+	@Inject
+	private Event<Member> memberEventSrc;
 
-    public void register(Member member) throws Exception {
-        log.info("Registering " + member.getName());
-        em.persist(member);
-        memberEventSrc.fire(member);
-    }
+	public void register(Member member) throws Exception {
+		log.info("Registering " + member.getName());
+		em.persist(member);
+		memberEventSrc.fire(member);
+	}
 }
