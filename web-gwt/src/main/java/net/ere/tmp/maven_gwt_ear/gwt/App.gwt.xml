@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6.1//EN" 
+  "https://raw.githubusercontent.com/gwtproject/gwt/2.6.1/distro-source/core/src/gwt-module.dtd">
+
+<module rename-to='App'>
+
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name="com.google.gwt.logging.Logging" />
+	<set-property name="gwt.logging.popupHandler" value="DISABLED" />
+
+	<entry-point class='net.ere.tmp.maven_gwt_ear.gwt.client.App' />
+
+	<source path='client' />
+	<source path='shared' />
+
+</module>
