@@ -1,13 +1,12 @@
 package net.ere.tmp.maven_gwt_ear.gwt.client;
 
-import java.util.Date;
 import java.util.logging.Logger;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsonUtils;
-import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -16,6 +15,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -30,81 +30,54 @@ public class App implements EntryPoint {
 
 	private Logger log = Logger.getLogger(App.class.getName());
 
+	private final FormPanel newMembarForm = new FormPanel();
+	private final TextBox tbName = new TextBox();
+	private final TextBox tvEmail = new TextBox();
+	private final TextBox tbPhone = new TextBox();
+
 	@Override
 	public void onModuleLoad() {
-		initForm();
+		initNewMemberForm();
+		loadMember();
 
-		final Button button = new Button("Button");
-		RootPanel.get("content").add(button);
+		final Button btnSubmit = new Button("Send data over FormPanel.submit()");
+		RootPanel.get("content").add(btnSubmit);
 
-		button.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				log.info("Clicked ...");
-				button.setText(new Date().toString());
-				callService();
-			}
+		btnSubmit.addClickHandler(new SubmitClickHandler());
 
-		});
+		final Button btnSendJson = new Button("Send JSON to the REST service");
+		RootPanel.get("content").add(btnSendJson);
+
+		btnSendJson.addClickHandler(new SendJsonClickHandler());
 	}
 
-	private void initForm() {
-		// Create a FormPanel and point it at a service.
-		final FormPanel form = new FormPanel();
-		// TODO dynamisieren
-		form.setAction("http://localhost:8080/maven_gwt_ear-web/rest/users");
+	private void initNewMemberForm() {
+		String url = getFullUrl("rest/users");
+		newMembarForm.setAction(url);
+		newMembarForm.setMethod(FormPanel.METHOD_POST);
 
-		// Because we're going to add a FileUpload widget, we'll need to set the
-		// form to use the POST method, and multipart MIME encoding.
-		// form.setEncoding(FormPanel.ENCODING_MULTIPART);
-		form.setMethod(FormPanel.METHOD_POST);
-
-		// FormElement.as(form.getElement()).setAcceptCharset("UTF-8");
-
-		// Create a panel to hold all of the form widgets.
-		VerticalPanel panel = new VerticalPanel();
-		form.setWidget(panel);
-
-		// Create a TextBox, giving it a name so that it will be submitted.
+		final VerticalPanel panel = new VerticalPanel();
+		newMembarForm.setWidget(panel);
 
 		panel.add(new Label("Name:"));
-
-		final TextBox tbName = new TextBox();
 		tbName.setName("name");
 		tbName.setText("Eügen");
 		panel.add(tbName);
 
 		panel.add(new Label("Email:"));
-		TextBox btEmail = new TextBox();
-		btEmail.setName("email");
-		btEmail.setText("test@web.de");
-		panel.add(btEmail);
+
+		tvEmail.setName("email");
+		tvEmail.setText("test@web.de");
+		panel.add(tvEmail);
 
 		panel.add(new Label("Phone:"));
-		TextBox tbPhone = new TextBox();
+
 		tbPhone.setName("phoneNumber");
 		tbPhone.setText("12345678901");
 		panel.add(tbPhone);
 
-		// Add a 'submit' button.
-		panel.add(new Button("Register", new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				// auf der Clientseite muss  der String encoded werden 
-				String name = tbName.getText();
-				String name2 = com.google.gwt.http.client.URL.encode(name);
-
-				log.info("~~~~> name: '" + name + "'; name2='" + name2 + "'");
-
-				tbName.setText(name2);
-
-				form.submit();
-				
-				tbName.setText(name);
-			}
-		}));
-
 		// Add an event handler to the form.
-		form.addSubmitHandler(new FormPanel.SubmitHandler() {
+		newMembarForm.addSubmitHandler(new FormPanel.SubmitHandler() {
 			public void onSubmit(SubmitEvent event) {
 
 				// This event is fired just before the form is submitted. We can take
@@ -115,7 +88,7 @@ public class App implements EntryPoint {
 				// }
 			}
 		});
-		form.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+		newMembarForm.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				// When the form submission is successfully completed, this event is
 				// fired. Assuming the service returned a response of type text/html,
@@ -125,13 +98,11 @@ public class App implements EntryPoint {
 			}
 		});
 
-		RootPanel.get("content").add(form);
+		RootPanel.get("content").add(newMembarForm);
 	}
 
-	private void callService() {
-		// final String JSON_URL = GWT.getModuleBaseURL();
-		final String JSON_URL = "http://localhost:8080/maven_gwt_ear-web/rest/members";
-		String url = URL.encode(JSON_URL);
+	private void loadMember() {
+		String url = getFullUrl("rest/members");
 
 		log.fine("\n  URL=" + url + "\n  ModuleBaseURL=" + GWT.getModuleBaseURL());
 
@@ -167,6 +138,69 @@ public class App implements EntryPoint {
 			});
 		} catch (RequestException e) {
 			log.severe("Couldn't retrieve JSON: " + e);
+		}
+	}
+
+	private void sendNewMemberData(final MemberData newMember) {
+		String url = getFullUrl("rest/members");
+
+		RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, url);
+		builder.setHeader("Content-Type", "application/json;charset=utf-8");
+
+		String requestData = new JSONObject(newMember).toString();
+
+		try {
+			@SuppressWarnings("unused")
+			Request request = builder.sendRequest(requestData, new RequestCallback() {
+				public void onError(Request request, Throwable exception) {
+					log.severe("Couldn't retrieve JSON: exception=" + exception);
+				}
+
+				public void onResponseReceived(Request request, Response response) {
+					if (200 == response.getStatusCode()) {
+						log.fine("sendNewMemberData(): " + response.getText());
+					} else {
+						log.warning("Couldn't retrieve JSON (" + response.getStatusText() + ")");
+					}
+				}
+			});
+		} catch (RequestException e) {
+			log.severe("Couldn't retrieve JSON: " + e);
+		}
+	}
+
+	private String getFullUrl(String part) {
+		@SuppressWarnings("unused")
+		String hostPageBaseURL = GWT.getHostPageBaseURL(); // http://localhost:8080/maven_gwt_ear-web-gwt/
+
+		return URL.encode("http://localhost:8080/maven_gwt_ear-web/" + part);
+	}
+
+	private class SubmitClickHandler implements ClickHandler {
+
+		@Override
+		public void onClick(ClickEvent event) {
+			String name = tbName.getText();
+			String name2 = com.google.gwt.http.client.URL.encode(name);
+
+			log.info("~~~~> name: '" + name + "'; name2='" + name2 + "'");
+
+			tbName.setText(name2);
+
+			newMembarForm.submit();
+
+			tbName.setText(name);
+		}
+	}
+
+	private class SendJsonClickHandler implements ClickHandler {
+		@Override
+		public void onClick(ClickEvent event) {
+			MemberData newMember = (MemberData) JavaScriptObject.createObject().cast();
+			newMember.setName(tbName.getText());
+			newMember.setEmail(tvEmail.getText());
+			newMember.setPhoneNumber(tbPhone.getText());
+			sendNewMemberData(newMember);
 		}
 	}
 }

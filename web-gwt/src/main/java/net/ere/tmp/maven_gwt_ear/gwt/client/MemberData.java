@@ -7,6 +7,10 @@ public class MemberData extends JavaScriptObject {
 	protected MemberData() {
 	}
 
+	public final native int getId() /*-{
+		return this.id;
+	}-*/;
+
 	public final native void setName(String name) /*-{
 		this.name = name;
 	}-*/;
@@ -15,15 +19,19 @@ public class MemberData extends JavaScriptObject {
 		return this.name;
 	}-*/;
 
+	public final native void setPhoneNumber(String phoneNumber) /*-{
+		this.phoneNumber = phoneNumber;
+	}-*/;
+
 	public final native String getPhoneNumber() /*-{
 		return this.phoneNumber;
 	}-*/;
 
-	public final native int getId() /*-{
-		return this.id;
+	public final native void setEmail(String email) /*-{
+		this.email = email;
 	}-*/;
 
-	public final native double getEmail() /*-{
+	public final native String getEmail() /*-{
 		return this.email;
 	}-*/;
 
