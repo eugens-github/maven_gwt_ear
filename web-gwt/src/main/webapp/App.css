@@ -107,6 +107,17 @@ input {
   margin-left: 85px;
 }
 
+.new_member_form input {
+	position: relative; left: 55px; bottom: 15px;
+	
+}
+
+.new_member_form button {
+	position: relative; left: -100px; bottom: -15px;
+	
+}
+
+
 /*  -----  table style  -------  */
 
 

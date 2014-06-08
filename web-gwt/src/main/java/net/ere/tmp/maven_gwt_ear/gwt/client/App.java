@@ -7,6 +7,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.JsonUtils;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.ParagraphElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.Request;
@@ -18,13 +21,13 @@ import com.google.gwt.http.client.URL;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class App implements EntryPoint {
 
@@ -35,20 +38,19 @@ public class App implements EntryPoint {
 	private final TextBox tvEmail = new TextBox();
 	private final TextBox tbPhone = new TextBox();
 
+	final Button btnRegister = new Button("Register");
+	final Button btnSubmit = new Button("Send data over FormPanel.submit()");
+
 	@Override
 	public void onModuleLoad() {
 		initNewMemberForm();
 		loadMember();
 
-		final Button btnSubmit = new Button("Send data over FormPanel.submit()");
 		RootPanel.get("content").add(btnSubmit);
 
 		btnSubmit.addClickHandler(new SubmitClickHandler());
 
-		final Button btnSendJson = new Button("Send JSON to the REST service");
-		RootPanel.get("content").add(btnSendJson);
-
-		btnSendJson.addClickHandler(new SendJsonClickHandler());
+		btnRegister.addClickHandler(new SendJsonClickHandler());
 	}
 
 	private void initNewMemberForm() {
@@ -56,7 +58,18 @@ public class App implements EntryPoint {
 		newMembarForm.setAction(url);
 		newMembarForm.setMethod(FormPanel.METHOD_POST);
 
-		final VerticalPanel panel = new VerticalPanel();
+		// final VerticalPanel panel = new VerticalPanel();
+		final FlowPanel panel = new FlowPanel();
+		panel.addStyleName("new_member_form");
+
+		HeadingElement headingElement = Document.get().createHElement(2);
+		headingElement.setInnerText("Member Registration");
+		newMembarForm.getElement().appendChild(headingElement);
+
+		ParagraphElement pElement = Document.get().createPElement();
+		pElement.setInnerText("Enforces annotation-based constraints defined on the model class.");
+		newMembarForm.getElement().appendChild(pElement);
+
 		newMembarForm.setWidget(panel);
 
 		panel.add(new Label("Name:"));
@@ -75,6 +88,8 @@ public class App implements EntryPoint {
 		tbPhone.setName("phoneNumber");
 		tbPhone.setText("12345678901");
 		panel.add(tbPhone);
+
+		panel.add(btnRegister);
 
 		// Add an event handler to the form.
 		newMembarForm.addSubmitHandler(new FormPanel.SubmitHandler() {
