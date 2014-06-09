@@ -173,7 +173,7 @@ public class App implements EntryPoint {
 
 				public void onResponseReceived(Request request, Response response) {
 					if (200 == response.getStatusCode()) {
-						log.fine("sendNewMemberData(): " + response.getText());
+						log.fine("Result on sendNewMemberData() = " + response.getText());
 					} else {
 						log.warning("Couldn't retrieve JSON (" + response.getStatusText() + ")");
 					}
