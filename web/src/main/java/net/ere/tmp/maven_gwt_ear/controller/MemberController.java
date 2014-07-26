@@ -16,6 +16,9 @@
  */
 package net.ere.tmp.maven_gwt_ear.controller;
 
+import net.ere.tmp.maven_gwt_ear.model.Member;
+import net.ere.tmp.maven_gwt_ear.service.MemberRegistration;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Model;
 import javax.enterprise.inject.Produces;
@@ -23,9 +26,10 @@ import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import net.ere.tmp.maven_gwt_ear.model.Member;
-import net.ere.tmp.maven_gwt_ear.service.MemberRegistration;
+import javax.management.MBeanServer;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 
 // The @Model stereotype is a convenience mechanism to make this a request-scoped bean that has an
 // EL name
@@ -50,6 +54,7 @@ public class MemberController {
 
     public String register() throws Exception {
         try {
+            test();
             memberRegistration.register(newMember);
             facesContext.addMessage(null,
                     new FacesMessage(FacesMessage.SEVERITY_INFO, "Registered!", "Registration successful"));
@@ -59,8 +64,24 @@ public class MemberController {
             FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_ERROR, errorMessage, "Registration Unsuccessful");
             facesContext.addMessage(null, m);
         }
-        
+
         return "";
+    }
+
+    private void test() {
+        try {
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+            ObjectName objectName = new ObjectName("jboss.msc:type=container,name=jboss-as");
+
+            ObjectInstance oi = mbeanServer.getObjectInstance(objectName);
+
+            String defaultDomain = mbeanServer.getDefaultDomain();
+            Object dumpServicesToString = mbeanServer.invoke(objectName, "dumpServicesToString", null, null);
+
+            System.out.println("" + dumpServicesToString);
+        } catch (Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     @PostConstruct
